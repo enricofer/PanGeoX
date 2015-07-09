@@ -1,0 +1,401 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <script>
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!
+        // För Svenska användare
+        var startWithSwedishGui = false;
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!
+    </script>
+    <!-- Webbsidans titel -->
+    <title>Panoramic Geodata eXtractor</title>
+    <!-- Använda JavaScript bibliotek och Stilmallar-->
+    <script type="text/javascript" src="pangeox_resources/leaflet.js"></script>
+    <script type="text/javascript" src="pangeox_resources/exif.js"></script>
+    <script type="text/javascript" src="pangeox_resources/proj4.js"></script>
+    <link rel="stylesheet" href="pangeox_resources/leaflet.css" />
+    <link rel="stylesheet" href="pangeox_resources/PanGeoX_clear.css" />
+    <!-- Stilmall för sidan -->
+</head>
+
+<body>
+    <!-- Hjälpfönstret, är dolt från start via css -->
+    <div id="help"><span onclick="toggleHelp()" style="cursor: pointer;">&nbsp;X</span>
+        <div id="helpContent">
+            <script src="pangeox_resources/help.js"></script>
+        </div>
+    </div>
+    <div id="rubrik">
+        <!-- Platshållare för rubrikområde-->PanGeoX <img style="width:30px; height:28px; cursor:pointer;" src="pangeox_resources/swe.jpg" onclick="swedify()" title="Växla till Svenska">
+    <!-- Platshållare för rubrikområde-->
+    Demo Panorama: <a href="panorama1.jpg">panorama1.jpg</a>, <a href="panorama2.jpg">panorama2.jpg</a>,
+    <a href="panorama3.jpg">panorama3.jpg (HQ)</a> & <a href="panorama4.jpg">panorama4.jpg (HQ)</a>.
+    <br>
+    <small><i>1 & 2 = iPhone + Photosynth, 3 & 4 = Canon 5D fisheye + Garmin GPS.</i></small>
+    <div onclick="toggleHelp()" style="cursor: pointer;"><b><u>SHOW HELP!</u></b>
+    </div></div>
+    <div id="panel">
+    <!-- Det första panoramat -->
+    <div id="sx">
+    <div id="map1"></div>
+    <div id="coords">UTM:
+    <input type="text" id="utm1" size="2" value="...">&nbsp;
+    <input type="text" id="east1" size="6" value="...">E&nbsp;
+    <input type="text" id="north1" size="6" value="...">N&nbsp;
+    <input type="file" id="panorama1"> <a href="pangeox_resources/pannellum.htm?panorama=..%252F" id="link1">Show 360°</a>
+    <br>
+    </div>
+    </div>
+    <div id="cx">
+    <div id="map3"></div>
+    <!-- Formulär med panoramadata och riktningar till objekt -->
+    <!-- Kartan _-->
+    <div id="formulär">
+        <!-- Här är området med det utpekade objektets koordinater -->
+        <table id="tabObjekt">
+                    <tr>
+                        <td style="text-align:center;" id="objectData">Object Data</td>
+                        <td>
+                            <input type="text" id="utm3" size="2" value="..." disabled>
+                            <input type="text" id="objEast" size="6" value="0" disabled>
+                            <input type="text" id="objNorth" size="6" value="0" disabled><span id="nameText">Name</span>:
+                            <input type="text" id="objNamn" size="8">
+                            <!-- Kör funktionen sparaObjekt() när knappen klickas --><img src="pangeox_resources/lock.png" title="Check to not erase when collecting!" id="lock">
+                            <input type="checkbox" title="Check to not erase when collecting!" id="fastna">
+                            <input type="button" onclick="sparaObjekt()" id="spara" value="Collect" disabled><span id="vinkelVarning">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        </td>
+                    </tr>
+        </table>
+    </div>
+    </div>
+    <div id="dx">
+    <!-- Det andra panoramat -->
+    <div id="map2"></div>
+    <div id="coords">UTM:
+    <input type="text" id="utm2" size="2" value="..." disabled>&nbsp;
+    <input type="text" id="east2" size="6" value="...">E&nbsp;
+    <input type="text" id="north2" size="6" value="...">N&nbsp;
+    <input type="file" id="panorama2"> <a href="pangeox_resources/pannellum.htm?panorama=..%252F" id="link2">Show 360°</a>
+    </div>
+    </div>
+    </div>
+    
+    
+    <!-- Detta är fältet med data för export och instruktionen -->
+    <div id="export">
+        <table id="tabLista">
+            <tr>
+                <td><span id="collectedObjects">Collected objects</span>
+                    <br>
+                    <textarea rows="10" cols="60" id="textExport">utm,x,y,objectname,angle</textarea>
+                </td>
+                <td id="instruktion"><u>Instruction</u>
+                    <br>Open two 360&deg; panoramas (vertical edge <u>must</u> be oriented to the North).
+                    <br>Fill in their position if coordinates are missing in EXIF.
+                    <br>Mark the same location in both panoramas by clicking on it.
+                    <br>Name the location and click "Collect"
+                    <br>
+                    <br>Open new panoramas as you like. Panoramas must be in the same folder as the html document. The text in the collected list should then be <u>copied</u> and saved to a csv file.</td>
+            </tr>
+        </table>
+    </div>
+    <!-- Fotnotsområde -->
+    <div id="fotnot">Panoramic Geodata eXtractor is created by Klas Karlsson 2015 &copy; CC-BY Version 0.7
+        <br>Based on: LeafletJS, ExifJS, Proj4JS and Pannellum
+    <a href="PanGeoX_v0_7.zip">DOWNLOAD version 0.7</a></div>
+    <script>
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // TRANSLATE GUI?
+        var guiShow360 = "Show 360&deg;";
+        var guiObjectData = "Object Data";
+        var guiLockTooltip = "Check to not erase when collecting!";
+        var guiName = "Name";
+        var guiCollect = "Collect";
+        var guiCollectedObjects = "Collected Objects";
+        var guiInstruction = "<u>Instruction</u><br>Open two 360&deg; panoramas (vertical edge <u>must</u> be oriented to Grid North).<br>Fill in their position if coordinates are missing in EXIF.<br>Mark the same location in both panoramas by clicking on it.<br>Name the location and click \"Collect\"<br><br>Open new panoramas as you like. Panoramas must be in the same folder as this document. The collected objects list should then be <u>copied</u> and saved to a csv file.<br><br>View <u onclick=\"toggleHelp()\" style=\"cursor: pointer;\">help file</u>.";
+        var guiDistance = "Distance";
+        var guiBearing = "Bearing";
+        var guiYourObject = "Your Object";
+        var guiBadAngle = "BAD ANGLE";
+        var guiEstimated = "Estimated";
+        var guiNoDepth = "Not Considering Depth!";
+        var guiReturnNormal = "Return to normal mode";
+        var guiMeasure = "Measure";
+        var reader  = new FileReader();
+	
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // If you want to translate the help file it is a separate file called help.js
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+        function swedify() {
+            document.getElementById("link1").innerHTML = "Visa 360&deg;", document.getElementById("link2").innerHTML = "Visa 360&deg;", document.getElementById("objectData").innerHTML = "Objektdata", document.getElementById("nameText").innerHTML = "Namn", document.getElementById("lock").title = "Lås för att inte radera namn vid spara!", document.getElementById("fastna").title = "Lås för att inte radera namn vid spara!", document.getElementById("spara").value = "Spara", document.getElementById("collectedObjects").innerHTML = "Sparade Objekt", document.getElementById("instruktion").innerHTML = '<u>Instruktion</u><br>Öppna två 360&deg; panoraman (vertikal kant <u>måste</u> vara orienterad i Grid Norr).<br>Fyll i deras position om koordinater saknas i EXIF.<br>Markera samma objekt i båda panoramabilderna genom att klicka på det.<br>Fyll i ett namn och klicka på "Spara"<br><br>Öppna nya panoraman efter hand. Panoraman måste ligga i samma katalog som html dokumentet. Texten i listan skall sedan <u>kopieras</u> och sparas i en textfil (*.csv).<br><br>Visa <u onclick="toggleHelp()" style="cursor: pointer;">hjälpfilen</u>. (ej översatt)', guiDistance = "Avstånd", guiBearing = "Riktning", guiYourObject = "Ditt Objekt", guiBadAngle = "DÅLIG VINKEL", guiEstimated = "Uppskattad", guiNoDepth = "Tar ej hänsyn till djup!", guiReturnNormal = "Återställ", guiMeasure = "Mät"
+        }
+        document.getElementById("link1").innerHTML = guiShow360, document.getElementById("link2").innerHTML = guiShow360, document.getElementById("objectData").innerHTML = guiObjectData, document.getElementById("nameText").innerHTML = guiName, document.getElementById("lock").title = guiLockTooltip, document.getElementById("fastna").title = guiLockTooltip, document.getElementById("spara").value = guiCollect, document.getElementById("collectedObjects").innerHTML = guiCollectedObjects, document.getElementById("instruktion").innerHTML = guiInstruction, startWithSwedishGui && swedify();
+        var utmZone = 33,
+            utmHemi = "",
+            projInfo = "+proj=utm +zone=%z +datum=WGS84 +units=m +no_defs",
+            objEast, objNorth, objName = "Unknown",
+            v1, v2, badAngle, i1, i2, refV, refI, measureMode = !1,
+            markerRef, bas, dist1, dist2, popup1 = L.popup({
+                autoPan: !1
+            }),
+            popup2 = L.popup({
+                autoPan: !1
+            }),
+            map1 = L.map("map1", {
+                crs: L.CRS.EPSG4326,
+                continuousWorld: !0,
+                maxZoom: 5
+            }).setView([0, 180], 2),
+            map2 = L.map("map2", {
+                crs: L.CRS.EPSG4326,
+                continuousWorld: !0,
+                maxZoom: 5
+            }).setView([0, 180], 2);
+
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!
+        // The MAP!!!!!!
+        // Change here if you want something other than OSM
+        var map3 = L.map('map3').setView([57.781818, 14.185069], 14);
+        var mapLayer = new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        });
+        map3.addLayer(mapLayer);
+        // Change above if you want something other than OSM
+        // !!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!
+
+        function toggleHelp() {
+            document.getElementById("help").style.visibility = "visible" == document.getElementById("help").style.visibility ? "hidden" : "visible"
+        }
+
+        function onMapClick1(e) {
+            if (document.getElementById("spara").disabled = !0, v1 = e.latlng.lng.toFixed(1), i1 = e.latlng.lat.toFixed(1), measureMode) {
+                var t = Math.tan(2 * Math.PI * (v1 - refV) / 360) * dist1,
+                    a = Math.sin(2 * Math.PI * (v1 - refV) / 360) * dist1,
+                    o = Math.tan(2 * Math.PI * (i1 - refI) / 360) * dist1,
+                    n = Math.sin(2 * Math.PI * (i1 - refI) / 360) * dist1,
+                    r = Math.sqrt(t * t + o * o).toFixed(1);
+                popup1.setLatLng(e.latlng).setContent("<b><u>" + guiEstimated + ":</u></b><br>&Delta;x: " + t.toFixed(1) + "m (" + a.toFixed(1) + "m)<br>&Delta;z: " + o.toFixed(1) + "m (" + n.toFixed(1) + "m)<br>Diagonal: " + r + "m<br>" + guiNoDepth + '<br><i onclick="measureStop()" style="cursor: pointer;">' + guiReturnNormal + "</i>").openOn(map1)
+            } else smalVinkel(), popup1.setLatLng(e.latlng).setContent(guiBearing + ": " + v1).openOn(map1), v1 != v2 && objektPosition()
+        }
+
+        function onMapClick2(e) {
+            if (document.getElementById("spara").disabled = !0, v2 = e.latlng.lng.toFixed(1), i2 = e.latlng.lat.toFixed(1), measureMode) {
+                var t = Math.tan(2 * Math.PI * (v2 - refV) / 360) * dist2,
+                    a = Math.sin(2 * Math.PI * (v2 - refV) / 360) * dist2,
+                    o = Math.tan(2 * Math.PI * (i2 - refI) / 360) * dist2,
+                    n = Math.sin(2 * Math.PI * (i2 - refI) / 360) * dist2,
+                    r = Math.sqrt(t * t + o * o).toFixed(1);
+                popup2.setLatLng(e.latlng).setContent("<b><u>" + guiEstimated + ":</u></b><br>&Delta;x: " + t.toFixed(1) + "m (" + a.toFixed(1) + "m)<br>&Delta;z: " + o.toFixed(1) + "m (" + n.toFixed(1) + "m)<br>Diagonal: " + r + "m<br>" + guiNoDepth + '<br><i onclick="measureStop()" style="cursor: pointer;">' + guiReturnNormal + "</i>").openOn(map2)
+            } else smalVinkel(), popup2.setLatLng(e.latlng).setContent(guiBearing + ": " + v2).openOn(map2), v1 != v2 && objektPosition()
+        }
+
+        function addPanoramaToMap(e, t, a) {
+            {
+                var o = L.icon({
+                    iconUrl: "pangeox_resources/panpos.png",
+                    iconSize: [30, 15],
+                    iconAnchor: [15, 7]
+                });
+                L.marker([e, t], {
+                    icon: o,
+                    title: a
+                }).addTo(map3)
+            }
+        }
+
+        function smalVinkel() {
+            var e = parseInt(v1),
+                t = parseInt(v2),
+                a = Math.abs(e - t);
+            a > 180 && (a = Math.abs((180 > e ? e + 360 : e) - (180 > t ? t + 360 : t))), 10 > a || a > 170 ? (document.getElementById("vinkelVarning").innerHTML = guiBadAngle + "!", badAngle = !0) : (document.getElementById("vinkelVarning").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", badAngle = !1)
+        }
+
+        function objektPosition() {
+            try {
+                if (v1 != v2) {
+                    var e = parseFloat(v1),
+                        t = parseFloat(v2);
+                    if (e > 0 && t > 0) {
+                        var a = parseFloat(document.getElementById("east1").value),
+                            o = parseFloat(document.getElementById("north1").value),
+                            n = parseFloat(document.getElementById("east2").value),
+                            r = parseFloat(document.getElementById("north2").value),
+                            m = Math.tan(2 * Math.PI * (90 - e) / 360),
+                            l = Math.tan(2 * Math.PI * (90 - t) / 360),
+                            i = o - a * m,
+                            u = r - n * l;
+                        objEast = (u - i) / (m - l), objNorth = objEast * l + u, objEast = objEast.toFixed(1), objNorth = objNorth.toFixed(1), bas = Math.sqrt(Math.pow(a - n, 2) + Math.pow(o - r, 2)), dist1 = Math.sqrt(Math.pow(a - objEast, 2) + Math.pow(o - objNorth, 2)).toFixed(1), dist2 = Math.sqrt(Math.pow(n - objEast, 2) + Math.pow(r - objNorth, 2)).toFixed(1), popup1.setContent(guiBearing + ": " + e + "&deg;<br>" + guiDistance + ": " + dist1 + ' m<br><i onclick="measure(1)" style="cursor: pointer;">' + guiMeasure + "</i>"), popup2.setContent(guiBearing + ": " + t + "&deg;<br>" + guiDistance + ": " + dist2 + ' m<br><i onclick="measure(2)" style="cursor: pointer;">' + guiMeasure + "</i>"); {
+                            Math.pow(-3, 2) + Math.pow(3, 2)
+                        }
+                        document.getElementById("objEast").value = objEast, document.getElementById("objNorth").value = objNorth, document.getElementById("spara").disabled = !1; {
+                            var d = proj4(projInfo, "EPSG:4326", [objEast, objNorth]);
+                            L.popup().setLatLng([d[1], d[0]]).setContent(badAngle ? "<b>" + guiBadAngle + "</b>" : guiYourObject).openOn(map3)
+                        }
+                    }
+                }
+            } catch (p) {
+                alert("Ooops! Found an Error:\n" + p.message + "\nTry reloading 2nd Panorama!"), map1.closePopup(), map2.closePopup()
+            }
+        }
+
+        function measure(e) {
+            measureMode = !0;
+            var t = L.icon({
+                iconUrl: "pangeox_resources/marker.png",
+                iconSize: [30, 15],
+                iconAnchor: [15, 7]
+            });
+            1 == e ? (markerRef = L.marker([i1, v1], {
+                icon: t,
+                title: "REF"
+            }).addTo(map1), refV = v1, refI = i1, map1.closePopup(), map2.closePopup(), map3.closePopup(), document.getElementById("map2").style.opacity = .4, document.getElementById("map3").style.opacity = .4, document.getElementById("formulär").style.opacity = .4) : (markerRef = L.marker([i2, v2], {
+                icon: t,
+                title: "REF"
+            }).addTo(map2), refV = v2, refI = i2, map1.closePopup(), map2.closePopup(), map3.closePopup(), document.getElementById("map1").style.opacity = .4, document.getElementById("map3").style.opacity = .4, document.getElementById("formulär").style.opacity = .4)
+        }
+
+        function measureStop() {
+            measureMode = !1, map1.removeLayer(markerRef), map2.removeLayer(markerRef), map1.closePopup(), map2.closePopup(), map3.closePopup(), document.getElementById("map1").style.opacity = 1, document.getElementById("map2").style.opacity = 1, document.getElementById("map3").style.opacity = 1, document.getElementById("formulär").style.opacity = 1
+        }
+
+        function sparaObjekt() {
+            try {
+                var e = parseInt(v1),
+                    t = parseInt(v2),
+                    a = Math.abs(e - t);
+                a > 180 && (a = Math.abs((180 > e ? e + 360 : e) - (180 > t ? t + 360 : t))), objName = "" != document.getElementById("objNamn").value ? document.getElementById("objNamn").value : "Unknown"; {
+                    var o = "\n" + utmZone + "N," + objEast + "," + objNorth + "," + objName + "," + a,
+                        n = proj4(projInfo, "EPSG:4326", [objEast, objNorth]),
+                        r = L.icon({
+                            iconUrl: "pangeox_resources/marker.png",
+                            iconSize: [20, 20],
+                            iconAnchor: [10, 10]
+                        });
+                    L.marker([n[1], n[0]], {
+                        icon: r,
+                        title: objName
+                    }).addTo(map3)
+                }
+                writeParam(document.getElementById("utm3").value,objEast,objNorth,objName,a);
+                document.getElementById("textExport").value += o, document.getElementById("spara").disabled = !0, map1.closePopup(), map2.closePopup(), map3.closePopup(), v1 = "", v2 = "", document.getElementById("objEast").value = "0", document.getElementById("objNorth").value = "0", 1 != document.getElementById("fastna").checked && (document.getElementById("objNamn").value = "")
+            } catch (m) {
+                alert(m.message)
+            }
+        }
+
+function writeParam(u,e,n,o,a)
+{
+      var viewPar = {
+      "transport":"collect",
+      "utmZone":u,
+      "objEast":parseFloat(e),
+      "objNorth":parseFloat(n),
+      "objName":o,
+      "angle":parseFloat(a)
+      };
+      window.status = JSON.stringify(viewPar);
+}
+
+        function calcC() {
+            var e = 2 * Math.PI * document.getElementById("CM").value / 360,
+                t = 2 * Math.PI * document.getElementById("LO").value / 360,
+                a = 2 * Math.PI * document.getElementById("LA").value / 360,
+                o = Math.atan(Math.tan(t - e) * Math.sin(a));
+            document.getElementById("C").value = (360 * o / 2 / Math.PI).toFixed(2)
+        }
+        var lager1 = new L.ImageOverlay("pangeox_resources/panorama.png", [
+            [-45, 0],
+            [45, 360]
+        ]);
+        map1.addLayer(lager1);
+        var lager2 = new L.ImageOverlay("pangeox_resources/panorama.png", [
+            [-45, 0],
+            [45, 360]
+        ]);
+        map2.addLayer(lager2), document.getElementById("utm1").onchange = function() {
+            utmZone = document.getElementById("utm1").value, document.getElementById("utm2").value = utmZone, document.getElementById("utm3").value = utmZone
+        }, document.getElementById("panorama1").onchange = function(e) {
+            EXIF.getData(e.target.files[0], function() {
+                var e = EXIF.getTag(this, "GPSLatitude"),
+                    t = EXIF.getTag(this, "GPSLongitude"),
+                    a = EXIF.getTag(this, "GPSLatitudeRef") || "N",
+                    o = EXIF.getTag(this, "GPSLongitudeRef") || "E",
+                    n = (e[0] + e[1] / 60 + e[2] / 3600) * ("N" == a ? 1 : -1),
+                    r = (t[0] + t[1] / 60 + t[2] / 3600) * ("E" == o ? 1 : -1);
+                map3.panTo([n, r]), map3.setZoom(15), addPanoramaToMap(n, r, document.getElementById("panorama1").value), utmZone = parseInt((180 + r) / 6) + 1, projInfo = projInfo.replace("%z", utmZone + ("N" == a ? "" : "+south")), document.getElementById("utm1").value = utmZone + a, document.getElementById("utm2").value = utmZone + a, document.getElementById("utm3").value = utmZone + a;
+                var m = proj4("EPSG:4326", projInfo, [r, n]),
+                    l = parseFloat(m[0]).toFixed(1),
+                    i = parseFloat(m[1]).toFixed(1);
+                document.getElementById("east1").value = l, document.getElementById("north1").value = i
+            }), map1.removeLayer(lager1);
+            map1.panTo([0, 180]);
+            map1.setZoom(2);
+            //working locally direct acces to file system is avoided 
+            //but we can get internal src reference from fileReader class
+            reader.readAsDataURL(e.target.files[0]);
+            reader.onloadend = function () {
+                var t = reader.result;
+                lager1 = new L.imageOverlay(t, [
+                    [-90, 0],
+                    [90, 360]
+                    ]), map1.addLayer(lager1), document.getElementById("link1").href = "pangeox_resources/pannellum.htm?panorama=../" + t + "&autoLoad=true&author=Klas Karlsson&title=" + t
+        }}, document.getElementById("panorama2").onchange = function(e) {
+            EXIF.getData(e.target.files[0], function() {
+                var e = EXIF.getTag(this, "GPSLatitude"),
+                    t = EXIF.getTag(this, "GPSLongitude"),
+                    a = EXIF.getTag(this, "GPSLatitudeRef") || "N",
+                    o = EXIF.getTag(this, "GPSLongitudeRef") || "E",
+                    n = (e[0] + e[1] / 60 + e[2] / 3600) * ("N" == a ? 1 : -1),
+                    r = (t[0] + t[1] / 60 + t[2] / 3600) * ("E" == o ? 1 : -1);
+                addPanoramaToMap(n, r, document.getElementById("panorama2").value);
+                var m = proj4("EPSG:4326", projInfo, [r, n]),
+                    l = parseFloat(m[0]).toFixed(1),
+                    i = parseFloat(m[1]).toFixed(1);
+                document.getElementById("east2").value = l, document.getElementById("north2").value = i
+            }), map2.removeLayer(lager2);
+            map2.panTo([0, 180]);
+            map2.setZoom(2);
+            //working locally direct acces to file system is avoided 
+            //but we can get internal src reference from fileReader class
+            reader.readAsDataURL(e.target.files[0]);
+            reader.onloadend = function () {
+                var t = reader.result;
+                lager2 = new L.imageOverlay(t, [
+                    [-90, 0],
+                    [90, 360]
+                ]), map2.addLayer(lager2), document.getElementById("link2").href = "pangeox_resources/pannellum.htm?panorama=../" + t + "&autoLoad=true&author=Klas Karlsson&title=" + t
+        }}, map1.on("click", onMapClick1), map2.on("click", onMapClick2), map1.attributionControl.addAttribution("PanGeoX by Klas Karlsson"), map2.attributionControl.addAttribution("PanGeoX by Klas Karlsson");
+
+        // That is all folks!
+        //
+
+        //   ____           ____                               _   ____            _                 
+        //  / ___| ___  ___/ ___| _   _ _ __  _ __   ___  _ __| |_/ ___| _   _ ___| |_ ___ _ __ ___  
+        // | |  _ / _ \/ _ \___ \| | | | '_ \| '_ \ / _ \| '__| __\___ \| | | / __| __/ _ \ '_ ` _ \ 
+        // | |_| |  __/ (_) |__) | |_| | |_) | |_) | (_) | |  | |_ ___) | |_| \__ \ ||  __/ | | | | |
+        //  \____|\___|\___/____/ \__,_| .__/| .__/ \___/|_|   \__|____/ \__, |___/\__\___|_| |_| |_|
+        //                             |_|   |_|                         |___/                       
+        // http://geosupportsystem.wordpress.com
+        //
+    </script>
+
+
+</body>
+
+</html>

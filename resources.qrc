@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/plugins/stereoSurveys" >
+        <file>lib/index.html</file>
+        <file>lib/pangeox_resources/exif.js</file>
+        <file>lib/pangeox_resources/help.js</file>
+        <file>lib/pangeox_resources/leaflet.css</file>
+        <file>lib/pangeox_resources/leaflet.js</file>
+        <file>lib/pangeox_resources/lock.png</file>
+        <file>lib/pangeox_resources/marker.png</file>
+        <file>lib/pangeox_resources/PanGeoX_clear.css</file>
+        <file>lib/pangeox_resources/panorama.png</file>
+        <file>lib/pangeox_resources/panpos.png</file>
+        <file>lib/pangeox_resources/proj4.js</file>
+    </qresource>
+</RCC>

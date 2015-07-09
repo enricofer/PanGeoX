@@ -1,0 +1,209 @@
+/* Styles for storymap.html by Klas Karlsson */
+
+	body {
+		font-family: Arial;
+		font-size: 9pt;
+		text-align: center;
+	}
+	
+	a {
+		color: #63328b;
+		font-weight: bold;
+		text-decoration: none;
+	}
+
+	#link1{
+		display:none;
+	}
+
+	#link2{
+		display:none;
+	}
+
+	#utm3{
+		display:none;
+	}
+
+	#objEast{
+		display:none;
+	}
+
+	#objNorth{
+		display:none;
+	}
+
+	#objectData{
+		display:none;
+	}
+
+	img {
+		width: 500px;
+	}
+
+/*	table {
+		border: 1px solid black;
+		background-color: #95ade2;
+		border-radius: 15px 15px 15px 15px;
+		margin: 10px;
+		width: 1000px;
+		margin-left: auto;
+		margin-right: auto;
+	}	*/
+
+/*	td {
+		padding: 5px;
+		font-weight: bold;
+		color: #243e46;
+	}*/
+
+    	#help {
+		text-align: left;
+		border: 3px solid black;
+		background-color: #FFF;
+		border-radius: 15px 15px 15px 15px;
+		position: absolute;
+		width: 500px;
+		height: 800px;
+		top: 150px;
+		left: 50px;
+		z-index: 99;
+		visibility: hidden;
+        display:none;
+    	}
+	
+	#helpContent {
+		position: relative;
+		text-align: left;
+		padding: 20px;
+		overflow-y: scroll;
+		overflow-x: hidden;
+		top: 10px;
+		height: 720px;
+		width: auto;
+        display:none;
+	}
+    	
+	#explained {
+		background: #DDD;
+		padding: 5px;
+	}
+    	#utmZone {
+    		font-size: 30pt;
+    	}
+
+	#rubrik {
+		z-index:1;
+		top: 0;
+		margin-left: auto;
+		margin-right: auto;
+		font-size: 40pt;
+		font-weight: bolder;
+		display: none;
+	}
+	.rubrikSmall {
+		font-size: 16pt;
+		font-weight: bolder;
+	}
+	.rubrikLarge {
+		font-size: 22pt;
+		font-weight: bolder;
+	}
+	.smallLeftAlign {
+		width: 80px;
+		height: 80px;
+		vertical-align:top;
+		float: left;
+		margin: 10px;
+	}
+	.helpImage {
+		width: 430px;
+	}
+	#map1 {
+		height: 250px;
+		border-radius: 20px;
+		z-index: 2;
+		width: 500px;
+		margin: 2px;
+		margin-left: auto;
+		margin-right: auto;
+		border: 0px solid black;
+		cursor: crosshair;
+	}
+	#map2 {
+		height: 250px;
+		border-radius: 20px;
+		z-index: 3;
+		width: 500px;
+		margin: 2px;
+		margin-left: auto;
+		margin-right: auto;
+		border: 0px solid black;
+		cursor: crosshair;
+	}
+	#map3 {
+		height: 250px;
+		border-radius: 20px;
+		z-index: 3;
+		width: 250px;
+		margin: 2px;
+		margin-left: auto;
+		margin-right: auto;
+		border: 0px solid black;
+		cursor: crosshair;
+	}
+    #coords{
+        padding: 3px;
+        
+    }
+	#sx{
+		float: left;
+        margin: 2px;
+	}
+	#cx{
+		float: left;
+		/*width: 250px;*/
+        margin: 2px;
+	}
+	#dx{
+		float: left;
+		overflow: auto;
+        margin: 2px;
+	}
+	#instruktion {
+		font-weight: normal;
+		font-size: 11pt;
+		font-style: italic;
+		text-align: left;
+	}
+    #lock {
+    	height: 15px;
+        width: 12px;
+    }
+	#vinkelVarning {
+		color: #840;
+		font-size: 10pt;
+		text-align: center;
+	}
+	#fotnot {
+		font-size: 10px;
+		color: #777;
+		margin-left: auto;
+		margin-right: auto;
+		display: none;
+	}
+	#export {
+		display: none;
+	}
+	#panel {
+		height: 270px;
+		border-radius: 25px 25px 25px 25px;
+		z-index: 3;
+		width: 1270px;
+	}
+	
+	#position {
+		height: 40px;
+		width: 250px;
+		font: small;
+		
+	}
