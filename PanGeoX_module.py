@@ -202,6 +202,8 @@ class PanGeoX:
         self.wdg.webView.settings().setAttribute(QWebSettings.AutoLoadImages, True)
         self.wdg.webView.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
         self.wdg.webView.settings().setAttribute(QWebSettings.AcceleratedCompositingEnabled, True)
+        self.wdg.webView.page().mainFrame().setScrollBarPolicy( Qt.Vertical, Qt.ScrollBarAlwaysOff )
+        self.wdg.webView.page().mainFrame().setScrollBarPolicy( Qt.Horizontal, Qt.ScrollBarAlwaysOff )
 
         self.wdg.webView.load(QUrl.fromLocalFile(os.path.join(self.plugin_dir,"lib","index.html")))
         
@@ -271,9 +273,16 @@ class PanGeoX:
             return
         print collected
         pangeoxLayerList = QgsMapLayerRegistry.instance().mapLayersByName("PanGeoX_objects")
-        #print pangeoxLayerList
+        print pangeoxLayerList
         if not pangeoxLayerList:
-            pangeoxLayer = QgsVectorLayer("Point?crs="+str(self.iface.mapCanvas().mapRenderer().destinationCrs().authid()), "PanGeoX_objects", "memory")
+            hem = collected["utmZone"][-1]
+            print hem
+            if hem == 'N':
+                utm_authid = 32600 + int(collected["utmZone"][:-1])
+            elif hem == 'S':
+                utm_authid = 32700 + int(collected["utmZone"][:-1])
+            print int(collected["utmZone"][:-1])
+            pangeoxLayer = QgsVectorLayer("Point?crs=EPSG:"+str(utm_authid), "PanGeoX_objects", "memory")
 
             pangeoxLayer.startEditing()
             pangeoxLayer.addAttribute(QgsField("utmZone",QVariant.Int))

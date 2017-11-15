@@ -43,10 +43,11 @@
     <!-- Det första panoramat -->
     <div id="sx">
     <div id="map1"></div>
-    <div id="coords">UTM:
-    <input type="text" id="utm1" size="2" value="...">&nbsp;
-    <input type="text" id="east1" size="6" value="...">E&nbsp;
-    <input type="text" id="north1" size="6" value="...">N&nbsp;
+    <div id="coords">
+    <input type="text" id="utm1" size="2" value="...">;
+    <input type="text" id="east1" size="5" value="...">E;
+    <input type="text" id="north1" size="5" value="...">N;
+    <input type="text" id="head1" size="3" value="...">H;
     <input type="file" id="panorama1"> <a href="pangeox_resources/pannellum.htm?panorama=..%252F" id="link1">Show 360°</a>
     <br>
     </div>
@@ -62,8 +63,8 @@
                         <td style="text-align:center;" id="objectData">Object Data</td>
                         <td>
                             <input type="text" id="utm3" size="2" value="..." disabled>
-                            <input type="text" id="objEast" size="6" value="0" disabled>
-                            <input type="text" id="objNorth" size="6" value="0" disabled><span id="nameText">Name</span>:
+                            <input type="text" id="objEast" size="5" value="0" disabled>
+                            <input type="text" id="objNorth" size="5" value="0" disabled><span id="nameText">Name</span>:
                             <input type="text" id="objNamn" size="8">
                             <!-- Kör funktionen sparaObjekt() när knappen klickas --><img src="pangeox_resources/lock.png" title="Check to not erase when collecting!" id="lock">
                             <input type="checkbox" title="Check to not erase when collecting!" id="fastna">
@@ -76,10 +77,11 @@
     <div id="dx">
     <!-- Det andra panoramat -->
     <div id="map2"></div>
-    <div id="coords">UTM:
-    <input type="text" id="utm2" size="2" value="..." disabled>&nbsp;
-    <input type="text" id="east2" size="6" value="...">E&nbsp;
-    <input type="text" id="north2" size="6" value="...">N&nbsp;
+    <div id="coords">
+    <input type="text" id="utm2" size="2" value="..." disabled>;
+    <input type="text" id="east2" size="5" value="...">E;
+    <input type="text" id="north2" size="5" value="...">N;
+    <input type="text" id="head2" size="3" value="...">H;
     <input type="file" id="panorama2"> <a href="pangeox_resources/pannellum.htm?panorama=..%252F" id="link2">Show 360°</a>
     </div>
     </div>
@@ -146,7 +148,7 @@
             utmHemi = "",
             projInfo = "+proj=utm +zone=%z +datum=WGS84 +units=m +no_defs",
             objEast, objNorth, objName = "Unknown",
-            v1, v2, badAngle, i1, i2, refV, refI, measureMode = !1,
+            h1,h2,v1, v2, badAngle, i1, i2, refV, refI, measureMode = !1,
             markerRef, bas, dist1, dist2, popup1 = L.popup({
                 autoPan: !1
             }),
@@ -184,25 +186,33 @@
         }
 
         function onMapClick1(e) {
-            if (document.getElementById("spara").disabled = !0, v1 = e.latlng.lng.toFixed(1), i1 = e.latlng.lat.toFixed(1), measureMode) {
+            document.getElementById("spara").disabled = !0;
+            v1 = e.latlng.lng-h1;
+            if (v1 < 0) {v1 = 360 + v1}
+            i1 = e.latlng.lat.toFixed(1);
+            if ( measureMode) {
                 var t = Math.tan(2 * Math.PI * (v1 - refV) / 360) * dist1,
                     a = Math.sin(2 * Math.PI * (v1 - refV) / 360) * dist1,
                     o = Math.tan(2 * Math.PI * (i1 - refI) / 360) * dist1,
                     n = Math.sin(2 * Math.PI * (i1 - refI) / 360) * dist1,
                     r = Math.sqrt(t * t + o * o).toFixed(1);
                 popup1.setLatLng(e.latlng).setContent("<b><u>" + guiEstimated + ":</u></b><br>&Delta;x: " + t.toFixed(1) + "m (" + a.toFixed(1) + "m)<br>&Delta;z: " + o.toFixed(1) + "m (" + n.toFixed(1) + "m)<br>Diagonal: " + r + "m<br>" + guiNoDepth + '<br><i onclick="measureStop()" style="cursor: pointer;">' + guiReturnNormal + "</i>").openOn(map1)
-            } else smalVinkel(), popup1.setLatLng(e.latlng).setContent(guiBearing + ": " + v1).openOn(map1), v1 != v2 && objektPosition()
+            } else smalVinkel(), popup1.setLatLng(e.latlng).setContent(guiBearing + ": " + v1.toFixed(1)).openOn(map1), v1 != v2 && objektPosition()
         }
 
         function onMapClick2(e) {
-            if (document.getElementById("spara").disabled = !0, v2 = e.latlng.lng.toFixed(1), i2 = e.latlng.lat.toFixed(1), measureMode) {
+            document.getElementById("spara").disabled = !0;
+            v2 = e.latlng.lng-h2;
+            if (v2 < 0) {v2 = 360 + v2}
+            i2 = e.latlng.lat.toFixed(1);
+            if (measureMode) {
                 var t = Math.tan(2 * Math.PI * (v2 - refV) / 360) * dist2,
                     a = Math.sin(2 * Math.PI * (v2 - refV) / 360) * dist2,
                     o = Math.tan(2 * Math.PI * (i2 - refI) / 360) * dist2,
                     n = Math.sin(2 * Math.PI * (i2 - refI) / 360) * dist2,
                     r = Math.sqrt(t * t + o * o).toFixed(1);
                 popup2.setLatLng(e.latlng).setContent("<b><u>" + guiEstimated + ":</u></b><br>&Delta;x: " + t.toFixed(1) + "m (" + a.toFixed(1) + "m)<br>&Delta;z: " + o.toFixed(1) + "m (" + n.toFixed(1) + "m)<br>Diagonal: " + r + "m<br>" + guiNoDepth + '<br><i onclick="measureStop()" style="cursor: pointer;">' + guiReturnNormal + "</i>").openOn(map2)
-            } else smalVinkel(), popup2.setLatLng(e.latlng).setContent(guiBearing + ": " + v2).openOn(map2), v1 != v2 && objektPosition()
+            } else smalVinkel(), popup2.setLatLng(e.latlng).setContent(guiBearing + ": " + v2.toFixed(1)).openOn(map2), v1 != v2 && objektPosition()
         }
 
         function addPanoramaToMap(e, t, a) {
@@ -334,11 +344,13 @@ function writeParam(u,e,n,o,a)
             EXIF.getData(e.target.files[0], function() {
                 var e = EXIF.getTag(this, "GPSLatitude"),
                     t = EXIF.getTag(this, "GPSLongitude"),
+                    c = EXIF.getTag(this, "GPSTrack"),
                     a = EXIF.getTag(this, "GPSLatitudeRef") || "N",
                     o = EXIF.getTag(this, "GPSLongitudeRef") || "E",
                     n = (e[0] + e[1] / 60 + e[2] / 3600) * ("N" == a ? 1 : -1),
                     r = (t[0] + t[1] / 60 + t[2] / 3600) * ("E" == o ? 1 : -1);
-                map3.panTo([n, r]), map3.setZoom(15), addPanoramaToMap(n, r, document.getElementById("panorama1").value), utmZone = parseInt((180 + r) / 6) + 1, projInfo = projInfo.replace("%z", utmZone + ("N" == a ? "" : "+south")), document.getElementById("utm1").value = utmZone + a, document.getElementById("utm2").value = utmZone + a, document.getElementById("utm3").value = utmZone + a;
+                map3.panTo([n, r]), map3.setZoom(15), addPanoramaToMap(n, r, document.getElementById("panorama1").value), utmZone = parseInt((180 + r) / 6) + 1, projInfo = projInfo.replace("%z", utmZone + ("N" == a ? "" : "+south")), document.getElementById("utm1").value = utmZone + a, document.getElementById("utm2").value = utmZone + a, document.getElementById("utm3").value = utmZone + a; document.getElementById("head1").value = c.toFixed(1).toString();
+                h1 = c;
                 var m = proj4("EPSG:4326", projInfo, [r, n]),
                     l = parseFloat(m[0]).toFixed(1),
                     i = parseFloat(m[1]).toFixed(1);
@@ -359,6 +371,7 @@ function writeParam(u,e,n,o,a)
             EXIF.getData(e.target.files[0], function() {
                 var e = EXIF.getTag(this, "GPSLatitude"),
                     t = EXIF.getTag(this, "GPSLongitude"),
+                    c = EXIF.getTag(this, "GPSTrack"),
                     a = EXIF.getTag(this, "GPSLatitudeRef") || "N",
                     o = EXIF.getTag(this, "GPSLongitudeRef") || "E",
                     n = (e[0] + e[1] / 60 + e[2] / 3600) * ("N" == a ? 1 : -1),
@@ -368,6 +381,8 @@ function writeParam(u,e,n,o,a)
                     l = parseFloat(m[0]).toFixed(1),
                     i = parseFloat(m[1]).toFixed(1);
                 document.getElementById("east2").value = l, document.getElementById("north2").value = i
+                document.getElementById("head2").value = c.toFixed(1).toString();
+                h2 = c;
             }), map2.removeLayer(lager2);
             map2.panTo([0, 180]);
             map2.setZoom(2);

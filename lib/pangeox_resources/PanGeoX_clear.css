@@ -20,6 +20,14 @@
 		display:none;
 	}
 
+	#panorama1{
+		width:180px;
+	}
+
+	#panorama2{
+		width:180px;
+	}
+
 	#utm3{
 		display:none;
 	}
@@ -120,10 +128,10 @@
 	}
 	#map1 {
 		height: 250px;
-		border-radius: 20px;
+		border-radius: 0px;
 		z-index: 2;
 		width: 500px;
-		margin: 2px;
+		margin: 0px;
 		margin-left: auto;
 		margin-right: auto;
 		border: 0px solid black;
@@ -131,10 +139,10 @@
 	}
 	#map2 {
 		height: 250px;
-		border-radius: 20px;
+		border-radius: 0px;
 		z-index: 3;
 		width: 500px;
-		margin: 2px;
+		margin: 0px;
 		margin-left: auto;
 		margin-right: auto;
 		border: 0px solid black;
@@ -142,32 +150,46 @@
 	}
 	#map3 {
 		height: 250px;
-		border-radius: 20px;
+		border-radius: 0px;
 		z-index: 3;
 		width: 250px;
-		margin: 2px;
+		margin: 0px;
 		margin-left: auto;
 		margin-right: auto;
 		border: 0px solid black;
 		cursor: crosshair;
 	}
     #coords{
-        padding: 3px;
+        padding: 4px;
         
     }
 	#sx{
 		float: left;
         margin: 2px;
+		background-color: #95ade2;
+		border-radius: 15px;
+		overflow: hidden;
+		height: 282px;
+        /*-webkit-mask-image: -webkit-radial-gradient(circle, white 100%, black 100%);*/
 	}
 	#cx{
 		float: left;
-		/*width: 250px;*/
+		width: 250px;
+		height: 282px;
+		overflow: hidden;
         margin: 2px;
+		background-color: #95ade2;
+		border-radius: 15px;
+        /*-webkit-mask-image: -webkit-radial-gradient(circle, white 100%, black 100%);*/
 	}
 	#dx{
 		float: left;
-		overflow: auto;
+		overflow: hidden;
         margin: 2px;
+		background-color: #95ade2;
+		border-radius: 15px;
+		height: 282px;
+        /*-webkit-mask-image: -webkit-radial-gradient(circle, white 100%, black 100%);*/
 	}
 	#instruktion {
 		font-weight: normal;
@@ -195,10 +217,9 @@
 		display: none;
 	}
 	#panel {
-		height: 270px;
-		border-radius: 25px 25px 25px 25px;
+		height: 287px;
 		z-index: 3;
-		width: 1270px;
+		width: 1262px;
 	}
 	
 	#position {

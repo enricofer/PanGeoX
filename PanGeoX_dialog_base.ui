@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1293</width>
-    <height>313</height>
+    <width>1284</width>
+    <height>317</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>visual surveys</string>
+   <string>PanGeox</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_10">
    <property name="spacing">
@@ -22,23 +22,31 @@
    </property>
    <item>
     <widget class="QWebView" name="webView">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
       <size>
-       <width>1280</width>
-       <height>305</height>
+       <width>0</width>
+       <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>1280</width>
-       <height>305</height>
+       <width>10000</width>
+       <height>10000</height>
       </size>
+     </property>
+     <property name="url">
+      <url>
+       <string>file:///Z:/dev/PanGeoX/lib/index.html</string>
+      </url>
      </property>
      <property name="renderHints">
       <set>QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
@@ -52,8 +60,8 @@
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>20</width>
-       <height>40</height>
+       <width>0</width>
+       <height>0</height>
       </size>
      </property>
     </spacer>
